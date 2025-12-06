@@ -2,6 +2,7 @@ import { DogConfig } from "../types";
 import { STYLE_PROMPTS } from "../constants";
 
 export const generateDogImage = async (config: DogConfig): Promise<string> => {
+  // 1. Příprava popisu pro AI
   const breedsString = config.breeds.join(" and ");
   const promptBuilder = STYLE_PROMPTS[config.style];
 
@@ -10,33 +11,19 @@ export const generateDogImage = async (config: DogConfig): Promise<string> => {
   }
 
   const prompt = promptBuilder(breedsString, config.pose);
-  
-  // 1. Vytvoříme odkaz (použijeme model 'turbo', je rychlejší)
+
+  // 2. Vytvoření odkazu na Pollinations.ai
+  // Používáme model 'flux', dělá moc hezké obrázky.
   const encodedPrompt = encodeURIComponent(prompt);
   const randomSeed = Math.floor(Math.random() * 1000000);
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}&model=turbo&width=1024&height=1024`;
+  
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}&width=1024&height=1024&model=flux`;
 
-  try {
-    // 2. TRIK: Stáhneme obrázek na pozadí a převedeme ho na "data"
-    // Tím zajistíme, že se v aplikaci zobrazí okamžitě a prohlížeč ho nezablokuje.
-    const response = await fetch(imageUrl);
-    
-    if (!response.ok) {
-        throw new Error("Obrázek se nepodařilo stáhnout");
-    }
+  // 3. Malá umělá pauza (2.5 sekundy)
+  // To je trik: Uživatel uvidí točící se kolečko "Vytvářím...",
+  // a mezitím už Pollinations na pozadí začne pracovat.
+  await new Promise(resolve => setTimeout(resolve, 2500));
 
-    const blob = await response.blob();
-
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-
-  } catch (error) {
-    console.error("Chyba načítání:", error);
-    // Kdyby stahování selhalo, vrátíme alespoň ten odkaz jako zálohu
-    return imageUrl;
-  }
+  // Vrátíme přímý odkaz. Prohlížeč se pak postará o zobrazení.
+  return imageUrl;
 };
