@@ -2,26 +2,41 @@ import { DogConfig } from "../types";
 import { STYLE_PROMPTS } from "../constants";
 
 export const generateDogImage = async (config: DogConfig): Promise<string> => {
-  // 1. Získáme správný popis stylu (zachováme tvou logiku pro Pixar/Realistické)
   const breedsString = config.breeds.join(" and ");
   const promptBuilder = STYLE_PROMPTS[config.style];
-  
+
   if (!promptBuilder) {
     throw new Error("Invalid style selected");
   }
 
   const prompt = promptBuilder(breedsString, config.pose);
-
-  // 2. Vytvoříme URL pro Pollinations.ai
-  // Tato služba vygeneruje obrázek jen tím, že zavoláme její adresu
-  const encodedPrompt = encodeURIComponent(prompt);
-  const randomSeed = Math.floor(Math.random() * 1000000); // Náhodné číslo, aby byl každý pes unikátní
   
-  // Sestavení finálního odkazu na obrázek
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}&width=1024&height=1024&model=flux`;
+  // 1. Vytvoříme odkaz (použijeme model 'turbo', je rychlejší)
+  const encodedPrompt = encodeURIComponent(prompt);
+  const randomSeed = Math.floor(Math.random() * 1000000);
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}&model=turbo&width=1024&height=1024`;
 
-  // 3. Malá pauza (1.5s), aby to vypadalo, že aplikace "pracuje" (UX efekt)
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  try {
+    // 2. TRIK: Stáhneme obrázek na pozadí a převedeme ho na "data"
+    // Tím zajistíme, že se v aplikaci zobrazí okamžitě a prohlížeč ho nezablokuje.
+    const response = await fetch(imageUrl);
+    
+    if (!response.ok) {
+        throw new Error("Obrázek se nepodařilo stáhnout");
+    }
 
-  return imageUrl;
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+  } catch (error) {
+    console.error("Chyba načítání:", error);
+    // Kdyby stahování selhalo, vrátíme alespoň ten odkaz jako zálohu
+    return imageUrl;
+  }
 };
