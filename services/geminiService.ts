@@ -3,7 +3,7 @@ import { DogConfig, DogStyle } from "../types";
 import { STYLE_PROMPTS } from "../constants";
 
 export const generateDogImage = async (config: DogConfig): Promise<string> => {
-  const apiKey = process.env.API_KEY;
+  const apiKey = import.meta.env.VITE_API_KEY;
   if (!apiKey) {
     throw new Error("API Key is missing.");
   }
