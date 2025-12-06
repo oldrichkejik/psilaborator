@@ -23,7 +23,7 @@ export const generateDogImage = async (config: DogConfig): Promise<string> => {
   // Use the image generation model
   // Note: Using gemini-2.5-flash-image for speed and general availability
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
+    model: 'imagen-3.0-generate-001',
     contents: {
       parts: [
         {
