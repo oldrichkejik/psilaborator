@@ -61,9 +61,9 @@ const App: React.FC = () => {
           <div className="inline-block animate-bounce mb-2 text-6xl md:text-7xl filter drop-shadow-lg cursor-default select-none">
             🐶 🧪 ⚡
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-4 tracking-tight">
-            Psí <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">Laboratoř</span>
-          </h1>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+  Vstup do světa psí fantazie! 🐾 Vyber si oblíbená plemena, zamíchej je dohromady a nech umělou inteligenci, aby ti vyčarovala toho nejroztomilejšího (nebo nejbláznivějšího) pejska na světě.
+</p>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             Staň se šíleným vědcem! Namíchej DNA různých plemen a vytvoř si svého unikátního čtyřnohého kamaráda.
           </p>
