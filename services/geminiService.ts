@@ -11,10 +11,10 @@ export const generateDogImage = async (config: DogConfig): Promise<string> => {
 
   const prompt = promptBuilder(breedsString, config.pose);
   
-  // Zvýšíme šanci na úspěch tím, že vynecháme složité parametry, necháme jen model a seed
+  // Zjednodušení a změna modelu na 'flux-realism' pro lepší stabilitu
   const encodedPrompt = encodeURIComponent(prompt);
   const randomSeed = Math.floor(Math.random() * 1000000);
   
-  // Vracíme URL okamžitě. Načítání bude řešit Result.tsx
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}&model=flux&width=1024&height=1024`;
+  // Přidáváme 'nologo=true' a 'enhance=false' pro rychlejší odezvu
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}&model=flux-realism&width=1024&height=1024`;
 };
